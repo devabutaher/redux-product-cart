@@ -1,11 +1,21 @@
 "use client";
 
+import { removeProduct, updateProductQuantity } from "@/redux/product/actions";
 import Image from "next/image";
 import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 const Cart = () => {
   const items = useSelector((state) => state.product);
+  const dispatch = useDispatch();
+
+  const handleUpdateQuantity = (id, type) => {
+    dispatch(updateProductQuantity(id, type));
+  };
+
+  const handleRemoveProduct = (id) => {
+    dispatch(removeProduct(id));
+  };
 
   return (
     <main className="py-16">
@@ -41,13 +51,28 @@ const Cart = () => {
                   <div className="flex items-center justify-center col-span-4 mt-4 space-x-8 md:mt-0">
                     {/* <!-- amount buttons --> */}
                     <div className="flex items-center space-x-4">
-                      <button className="lws-incrementQuantity">
+                      <button
+                        onClick={() =>
+                          handleUpdateQuantity(product.id, "addQuantity")
+                        }
+                        className="lws-incrementQuantity"
+                        disabled={
+                          items.products.find((item) => item.id === product.id)
+                            .quantity === 0
+                        }
+                      >
                         <FaPlus size={20} />
                       </button>
                       <span className="lws-cartQuantity">
                         {product.quantity}
                       </span>
-                      <button className="lws-decrementQuantity">
+                      <button
+                        onClick={() =>
+                          handleUpdateQuantity(product.id, "removeQuantity")
+                        }
+                        className="lws-decrementQuantity"
+                        disabled={product.quantity === 0}
+                      >
                         <FaMinus size={20} />
                       </button>
                     </div>
@@ -58,7 +83,10 @@ const Cart = () => {
                   </div>
                   {/* <!-- delete button --> */}
                   <div className="flex items-center justify-center col-span-2 mt-4 md:justify-end md:mt-0">
-                    <button className="lws-removeFromCart">
+                    <button
+                      onClick={() => handleRemoveProduct(product.id)}
+                      className="lws-removeFromCart"
+                    >
                       <FaTrash size={20} />
                     </button>
                   </div>
