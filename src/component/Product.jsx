@@ -1,6 +1,14 @@
+"use client";
+
 import Image from "next/image";
 
 const Product = () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const { name, image_url, quantity, price, category } = form;
+  };
+
   return (
     <main className="py-16">
       <div className="productWrapper">
@@ -37,13 +45,18 @@ const Product = () => {
           {/* <!-- Product Input Form --> */}
           <div className="formContainer">
             <h4 className="formTitle">Add New Product</h4>
-            <form className="space-y-4 text-[#534F4F]" id="lws-addProductForm">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4 text-[#534F4F]"
+              id="lws-addProductForm"
+            >
               {/* <!-- product name --> */}
               <div className="space-y-2">
                 <label htmlFor="lws-inputName">Product Name</label>
                 <input
                   className="addProductInput"
                   id="lws-inputName"
+                  name="name"
                   type="text"
                   required
                 />
@@ -54,6 +67,7 @@ const Product = () => {
                 <input
                   className="addProductInput"
                   id="lws-inputCategory"
+                  name="category"
                   type="text"
                   required
                 />
@@ -64,6 +78,7 @@ const Product = () => {
                 <input
                   className="addProductInput"
                   id="lws-inputImage"
+                  name="image_url"
                   type="text"
                   required
                 />
@@ -77,6 +92,7 @@ const Product = () => {
                     className="addProductInput"
                     type="number"
                     id="lws-inputPrice"
+                    name="price"
                     required
                   />
                 </div>
@@ -87,6 +103,7 @@ const Product = () => {
                     className="addProductInput"
                     type="number"
                     id="lws-inputQuantity"
+                    name="quantity"
                     required
                   />
                 </div>
