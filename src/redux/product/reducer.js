@@ -13,12 +13,12 @@ const generateProductID = (products) => {
   return maxId + 1;
 };
 
-const updateProductQuantity = (products, productId, quantity) => {
+const updateProductQuantity = (products, productId, quantityChange) => {
   return products.map((product) =>
     product.id === productId
       ? {
           ...product,
-          quantity: product.quantity + quantity,
+          quantity: Number(product.quantity) + quantityChange,
         }
       : product
   );
@@ -34,7 +34,7 @@ const productReducer = (state = { products: [], cart: [] }, action) => {
         products: [
           ...state.products,
           {
-            id: generateProductID(state),
+            id: generateProductID(state.products),
             name,
             price,
             quantity,
@@ -57,26 +57,24 @@ const productReducer = (state = { products: [], cart: [] }, action) => {
         (product) => product.id === action.payload
       );
 
-      if (productAddToCart) {
-        const existingCartProduct = state.cart.find(
-          (product) => product.id === productAddToCart.id
+      const existingCartProduct = state.cart.find(
+        (product) => product.id === productAddToCart.id
+      );
+
+      if (existingCartProduct) {
+        const updatedCart = updateProductQuantity(
+          state.cart,
+          existingCartProduct.id,
+          +1
         );
 
-        if (existingCartProduct) {
-          const updatedCart = updateProductQuantity(
-            state.products,
-            productAddToCart.id,
-            +1
-          );
+        const updatedProducts = updateProductQuantity(
+          state.products,
+          productAddToCart.id,
+          -1
+        );
 
-          const updatedProducts = updateProductQuantity(
-            state.products,
-            productAddToCart.id,
-            -1
-          );
-
-          return { ...state, products: updatedProducts, cart: updatedCart };
-        }
+        return { ...state, products: updatedProducts, cart: updatedCart };
       } else {
         const updatedProducts = updateProductQuantity(
           state.products,
