@@ -1,8 +1,18 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { FaShoppingBag } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
+  const items = useSelector((state) => state.product);
+
+  const cartQuantity = items.cart.reduce(
+    (sum, product) => sum + product.quantity,
+    0
+  );
+
   return (
     // <!-- Navbar -->
     <nav className="bg-[#171C2A] py-4">
@@ -23,7 +33,7 @@ const Navbar = () => {
           </Link>
           <Link href="/cart" className="navCart" id="lws-cart">
             <FaShoppingBag size={20} />
-            <span id="lws-totalCart">0</span>
+            <span id="lws-totalCart">{cartQuantity}</span>
           </Link>
         </div>
       </div>

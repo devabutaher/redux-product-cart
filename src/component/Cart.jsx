@@ -1,58 +1,70 @@
+"use client";
+
 import Image from "next/image";
 import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
+import { useSelector } from "react-redux";
 
 const Cart = () => {
+  const items = useSelector((state) => state.product);
+
   return (
     <main className="py-16">
-      <div className="container 2xl:px-8 px-2 mx-auto">
+      <div className="container px-2 mx-auto 2xl:px-8">
         <h2 className="mb-8 text-xl font-bold">Shopping Cart</h2>
         <div className="cartListContainer">
           <div className="space-y-6">
             {/* <!-- Cart Item --> */}
-            <div className="cartCard">
-              <div className="flex items-center col-span-6 space-x-6">
-                {/* <!-- cart image --> */}
-                <Image
-                  className="lws-cartImage"
-                  width={600}
-                  height={600}
-                  src="https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  alt="product"
-                />
-                {/* <!-- cart item info --> */}
-                <div className="space-y-2">
-                  <h4 className="lws-cartName">
-                    Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptop
-                  </h4>
-                  <p className="lws-cartCategory">Men{"'"}s clothing</p>
-                  <p>
-                    BDT <span className="lws-cartPrice">1100</span>
-                  </p>
+            {items.cart.length <= 0 ? (
+              <h1>No Product Found</h1>
+            ) : (
+              items.cart.map((product) => (
+                <div key={product.id} className="cartCard">
+                  <div className="flex items-center col-span-6 space-x-6">
+                    {/* <!-- cart image --> */}
+                    <Image
+                      className="lws-cartImage"
+                      width={600}
+                      height={600}
+                      src={product.image_url}
+                      alt="product"
+                    />
+                    {/* <!-- cart item info --> */}
+                    <div className="space-y-2">
+                      <h4 className="lws-cartName">{product.name}</h4>
+                      <p className="lws-cartCategory">{product.category}</p>
+                      <p>
+                        BDT{" "}
+                        <span className="lws-cartPrice">{product.price}</span>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-center col-span-4 mt-4 space-x-8 md:mt-0">
+                    {/* <!-- amount buttons --> */}
+                    <div className="flex items-center space-x-4">
+                      <button className="lws-incrementQuantity">
+                        <FaPlus size={20} />
+                      </button>
+                      <span className="lws-cartQuantity">
+                        {product.quantity}
+                      </span>
+                      <button className="lws-decrementQuantity">
+                        <FaMinus size={20} />
+                      </button>
+                    </div>
+                    {/* <!-- price --> */}
+                    <p className="text-lg font-bold">
+                      BDT <span className="lws-calculatedPrice">2200</span>
+                    </p>
+                  </div>
+                  {/* <!-- delete button --> */}
+                  <div className="flex items-center justify-center col-span-2 mt-4 md:justify-end md:mt-0">
+                    <button className="lws-removeFromCart">
+                      <FaTrash size={20} />
+                    </button>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center justify-center col-span-4 mt-4 space-x-8 md:mt-0">
-                {/* <!-- amount buttons --> */}
-                <div className="flex items-center space-x-4">
-                  <button className="lws-incrementQuantity">
-                    <FaPlus size={20} />
-                  </button>
-                  <span className="lws-cartQuantity">2</span>
-                  <button className="lws-decrementQuantity">
-                    <FaMinus size={20} />
-                  </button>
-                </div>
-                {/* <!-- price --> */}
-                <p className="text-lg font-bold">
-                  BDT <span className="lws-calculatedPrice">2200</span>
-                </p>
-              </div>
-              {/* <!-- delete button --> */}
-              <div className="flex items-center justify-center col-span-2 mt-4 md:justify-end md:mt-0">
-                <button className="lws-removeFromCart">
-                  <FaTrash size={20} />
-                </button>
-              </div>
-            </div>
+              ))
+            )}
             {/* <!-- Cart Items Ends --> */}
           </div>
 
