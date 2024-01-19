@@ -6,7 +6,7 @@ import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 
 const Cart = () => {
-  const items = useSelector((state) => state.product);
+  const items = useSelector((state) => state.productStore);
   const dispatch = useDispatch();
 
   const handleUpdateQuantity = (id, type) => {
@@ -71,7 +71,7 @@ const Cart = () => {
                           handleUpdateQuantity(product.id, "removeQuantity")
                         }
                         className="lws-decrementQuantity"
-                        disabled={product.quantity === 0}
+                        disabled={product.quantity === 1}
                       >
                         <FaMinus size={20} />
                       </button>

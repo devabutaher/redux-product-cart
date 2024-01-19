@@ -40,12 +40,14 @@ const productReducer = (
       );
 
       if (existingCartProduct) {
+        // update the product quantity
         const updatedProducts = updateProductQuantity(
           state.products,
           productAddToCart.id,
           -1
         );
 
+        // update the cart product quantity
         const updatedCart = updateProductQuantity(
           state.cart,
           existingCartProduct.id,
@@ -59,6 +61,7 @@ const productReducer = (
           totalPrice: state.totalPrice + Number(productAddToCart.price),
         };
       } else {
+        // update the product quantity
         const updatedProducts = updateProductQuantity(
           state.products,
           productAddToCart.id,
@@ -76,22 +79,25 @@ const productReducer = (
     case UPDATEPRODUCTQUANTITY:
       const { productId, updateType } = action.payload;
 
+      // find the updated product
       const productUpdateQuantity = state.products.find(
         (product) => product.id === productId
       );
 
       switch (updateType) {
         case "addQuantity":
-          const addCartQuantity = updateProductQuantity(
-            state.cart,
-            productId,
-            +1
-          );
-
+          // update the product quantity
           const addProductUpdate = updateProductQuantity(
             state.products,
             productId,
             -1
+          );
+
+          // update the cart product quantity
+          const addCartQuantity = updateProductQuantity(
+            state.cart,
+            productId,
+            +1
           );
 
           return {
@@ -102,35 +108,40 @@ const productReducer = (
           };
 
         case "removeQuantity":
-          const removeCartQuantity = updateProductQuantity(
-            state.cart,
-            productId,
-            -1
-          );
-
-          const removeProductUpdate = updateProductQuantity(
+          // update the product quantity
+          const removedProductUpdate = updateProductQuantity(
             state.products,
             productId,
             +1
           );
 
+          // update the cart product quantity
+          const removedCartUpdate = updateProductQuantity(
+            state.cart,
+            productId,
+            -1
+          );
+
           return {
             ...state,
-            products: removeProductUpdate,
-            cart: removeCartQuantity,
+            products: removedProductUpdate,
+            cart: removedCartUpdate,
             totalPrice: state.totalPrice - Number(productUpdateQuantity.price),
           };
       }
 
     case REMOVECARTPRODUCT:
+      // find the removed cart product
       const removedCartProduct = state.cart.find(
         (product) => product.id === action.payload
       );
 
+      // remove the product in cart
       const removedCart = state.cart.filter(
         (product) => product.id !== action.payload
       );
 
+      // update the product quantity
       const updateProduct = updateProductQuantity(
         state.products,
         action.payload,

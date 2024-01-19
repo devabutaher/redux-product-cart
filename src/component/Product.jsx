@@ -6,10 +6,11 @@ import { useDispatch, useSelector } from "react-redux";
 
 const Product = () => {
   const dispatch = useDispatch();
-  const items = useSelector((state) => state.product);
+  const items = useSelector((state) => state.productStore);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     const form = e.target;
 
     const product = {
@@ -21,6 +22,8 @@ const Product = () => {
     };
 
     dispatch(addProduct(product));
+
+    form.reset();
   };
 
   const handleCart = (id) => {

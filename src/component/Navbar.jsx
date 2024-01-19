@@ -6,8 +6,9 @@ import { FaShoppingBag } from "react-icons/fa";
 import { useSelector } from "react-redux";
 
 const Navbar = () => {
-  const items = useSelector((state) => state.product);
+  const items = useSelector((state) => state.productStore);
 
+  // sum of product cart quantity
   const cartQuantity = items.cart.reduce(
     (sum, product) => sum + product.quantity,
     0
