@@ -1,3 +1,5 @@
+import { generateProductID } from "../../utils/generateProductID";
+import { updateProductQuantity } from "../../utils/updateProductQuantity";
 import {
   ADDPRODUCT,
   ADDTOCART,
@@ -5,26 +7,10 @@ import {
   UPDATEPRODUCTQUANTITY,
 } from "./actionTypes";
 
-const generateProductID = (products) => {
-  const maxId = products.reduce(
-    (maxId, product) => Math.max(product.id, maxId),
-    0
-  );
-  return maxId + 1;
-};
-
-const updateProductQuantity = (products, productId, quantityChange) => {
-  return products.map((product) =>
-    product.id === productId
-      ? {
-          ...product,
-          quantity: Number(product.quantity) + quantityChange,
-        }
-      : product
-  );
-};
-
-const productReducer = (state = { products: [], cart: [] }, action) => {
+const productReducer = (
+  state = { products: [], cart: [], totalPrice: 0 },
+  action
+) => {
   switch (action.type) {
     case ADDPRODUCT:
       const { name, price, quantity, image_url, category } = action.payload;
@@ -44,26 +30,6 @@ const productReducer = (state = { products: [], cart: [] }, action) => {
         ],
       };
 
-    case REMOVECARTPRODUCT:
-      const removedCartQuantity = state.cart.find(
-        (product) => product.id === action.payload
-      ).quantity;
-
-      const removedCart = state.cart.filter(
-        (product) => product.id !== action.payload
-      );
-
-      const updateProduct = updateProductQuantity(
-        state.products,
-        action.payload,
-        +removedCartQuantity
-      );
-
-      return {
-        products: updateProduct,
-        cart: removedCart,
-      };
-
     case ADDTOCART:
       const productAddToCart = state.products.find(
         (product) => product.id === action.payload
@@ -74,19 +40,24 @@ const productReducer = (state = { products: [], cart: [] }, action) => {
       );
 
       if (existingCartProduct) {
-        const updatedCart = updateProductQuantity(
-          state.cart,
-          existingCartProduct.id,
-          +1
-        );
-
         const updatedProducts = updateProductQuantity(
           state.products,
           productAddToCart.id,
           -1
         );
 
-        return { ...state, products: updatedProducts, cart: updatedCart };
+        const updatedCart = updateProductQuantity(
+          state.cart,
+          existingCartProduct.id,
+          +1
+        );
+
+        return {
+          ...state,
+          products: updatedProducts,
+          cart: updatedCart,
+          totalPrice: state.totalPrice + Number(productAddToCart.price),
+        };
       } else {
         const updatedProducts = updateProductQuantity(
           state.products,
@@ -98,19 +69,16 @@ const productReducer = (state = { products: [], cart: [] }, action) => {
           ...state,
           products: updatedProducts,
           cart: [...state.cart, { ...productAddToCart, quantity: 1 }],
+          totalPrice: state.totalPrice + Number(productAddToCart.price),
         };
       }
 
     case UPDATEPRODUCTQUANTITY:
       const { productId, updateType } = action.payload;
 
-      const existQuantity = state.products.find(
+      const productUpdateQuantity = state.products.find(
         (product) => product.id === productId
-      ).quantity;
-
-      const cartQuantity = state.cart.find(
-        (product) => product.id === productId
-      ).quantity;
+      );
 
       switch (updateType) {
         case "addQuantity":
@@ -130,6 +98,7 @@ const productReducer = (state = { products: [], cart: [] }, action) => {
             ...state,
             products: addProductUpdate,
             cart: addCartQuantity,
+            totalPrice: state.totalPrice + Number(productUpdateQuantity.price),
           };
 
         case "removeQuantity":
@@ -149,8 +118,32 @@ const productReducer = (state = { products: [], cart: [] }, action) => {
             ...state,
             products: removeProductUpdate,
             cart: removeCartQuantity,
+            totalPrice: state.totalPrice - Number(productUpdateQuantity.price),
           };
       }
+
+    case REMOVECARTPRODUCT:
+      const removedCartProduct = state.cart.find(
+        (product) => product.id === action.payload
+      );
+
+      const removedCart = state.cart.filter(
+        (product) => product.id !== action.payload
+      );
+
+      const updateProduct = updateProductQuantity(
+        state.products,
+        action.payload,
+        +removedCartProduct.quantity
+      );
+
+      return {
+        products: updateProduct,
+        cart: removedCart,
+        totalPrice:
+          state.totalPrice -
+          Number(removedCartProduct.price * removedCartProduct.quantity),
+      };
 
     default:
       return state;
